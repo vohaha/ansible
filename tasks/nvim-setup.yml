@@ -1,0 +1,21 @@
+---
+- name: Remove neovim
+  ansible.builtin.shell: rm -rf ~/neovim
+  tags: &tags_for_nvim_setup ['init', 'nvim']
+- name: Install dependencies
+  tags: *tags_for_nvim_setup
+  become: true
+  ansible.builtin.apt:
+    name: ['ninja-build', 'gettext', 'cmake', 'unzip', 'curl']
+- name: Clone Neovim
+  tags: *tags_for_nvim_setup
+  ansible.builtin.git:
+    repo: 'https://github.com/neovim/neovim.git'
+    dest: "{{ lookup('env', 'HOME') }}/neovim"
+- name: Build neovim
+  tags: *tags_for_nvim_setup
+  ansible.builtin.shell: "cd {{ lookup('env', 'HOME') }}/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo"
+- name: Install neovim
+  become: true
+  ansible.builtin.shell: "cd {{ lookup('env', 'HOME') }}/neovim && make install"
+  tags: *tags_for_nvim_setup

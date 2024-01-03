@@ -1,0 +1,23 @@
+- name: Intsall zsh
+  tags: &tags_for_zsh_setup ['init', 'shell']
+  ansible.builtin.apt: name=zsh
+- name: Change shell
+  tags: *tags_for_zsh_setup
+  become: true
+  ansible.builtin.shell: chsh -s $(which zsh)
+- name: Install ohmyzsh
+  tags: *tags_for_zsh_setup
+  ansible.builtin.shell: "rm -rf ~/.oh-my-zsh && curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh"
+- name: Install the zsh plugin autosuggestions
+  tags: *tags_for_zsh_setup
+  ansible.builtin.git:
+    repo: 'https://github.com/zsh-users/zsh-autosuggestions.git'
+    dest: '~/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
+- name: Install the zsh plugin syntax highlighting
+  tags: *tags_for_zsh_setup
+  ansible.builtin.git:
+    repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git'
+    dest: '~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting'
+- name: Upate zsh config
+  tags: *tags_for_zsh_setup
+  ansible.builtin.shell: sed -i -e 's/(git/(git zsh-autosuggestions zsh-syntax-highlighting/g' ~/.zshrc

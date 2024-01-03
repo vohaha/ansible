@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# pull ansible
+sudo ansible-pull -U https://github.com/vohaha/ansible.git
